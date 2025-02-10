@@ -1,27 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Use this import for Next.js 13 and above
 
-export default function SignIn() {
+export default function RegisterForm() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
 
     try {
-      const res = await fetch("/api/auth/signin", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
@@ -30,8 +31,10 @@ export default function SignIn() {
         throw new Error(data.message || "Something went wrong");
       }
 
-      // Redirect to the dashboard after successful login
-      router.push("/dashboard");
+      setSuccess("Account created successfully! You can now sign in.");
+      setName("");
+      setEmail("");
+      setPassword("");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -40,16 +43,35 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="h-screen">
+
+<div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-      
+     
         <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
-          Sign in to your account
+          Create your account
         </h2>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-900">
+              Name
+            </label>
+            <div className="mt-2">
+              <input
+                id="name"
+                name="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)} // Update name state on change
+                required
+                className="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
+              />
+            </div>
+          </div>
+
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-900">
               Email address
@@ -59,36 +81,29 @@ export default function SignIn() {
                 id="email"
                 name="email"
                 type="email"
-                required
-                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)} // Update email state on change
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
+                required
+                autoComplete="email"
+                className="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
               />
             </div>
           </div>
 
           <div>
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-900">
-                Password
-              </label>
-              <div className="text-sm">
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                  Forgot password?
-                </a>
-              </div>
-            </div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+              Password
+            </label>
             <div className="mt-2">
               <input
                 id="password"
                 name="password"
                 type="password"
-                required
-                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)} // Update password state on change
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
+                required
+                autoComplete="new-password"
+                className="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
               />
             </div>
           </div>
@@ -101,20 +116,24 @@ export default function SignIn() {
                 loading ? "bg-gray-400 cursor-not-allowed" : "hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               }`}
             >
-              {loading ? "Signing In..." : "Sign In"} 
+              {loading ? "Creating..." : "Sign Up"} 
             </button>
           </div>
         </form>
 
         {error && <p className="mt-2 text-sm text-red-500">{error}</p>} 
+        {success && <p className="mt-2 text-sm text-green-500">{success}</p>}
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Not a member?{" "}
-          <a href="/auth/SignUp" className="font-semibold text-indigo-600 hover:text-indigo-500">
-            Sign up
+          Already have an account?{" "}
+          <a href="/auth/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+            Sign in
           </a>
         </p>
       </div>
     </div>
+
+    </div>
+    
   );
 }
