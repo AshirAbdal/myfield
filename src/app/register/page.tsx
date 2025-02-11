@@ -63,7 +63,7 @@ export default function Register() {
         </div>
 
         <button className="w-full border border-solid border-black py-1.5 mt-2.5 rounded
-        transition duration-150 ease hover:bg-black text-white bg-black">
+        transition duration-150  text-black bg-white">
           Sign up
         </button>
 
