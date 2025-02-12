@@ -1,8 +1,8 @@
-// src/middleware.ts
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// List of allowed origins (add your own here)
+
 const allowedOrigins = [
   'http://localhost:3000',
   'https://your-frontend-domain.com'
@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
   const origin = request.headers.get('origin') || '';
   const isAllowedOrigin = allowedOrigins.includes(origin);
 
-  // Handle preflight requests
+ 
   if (request.method === 'OPTIONS') {
     const preflightHeaders = new Headers({
       'Access-Control-Allow-Origin': isAllowedOrigin ? origin : '*',
