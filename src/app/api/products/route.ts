@@ -1,6 +1,6 @@
 
 import { NextResponse } from "next/server";
-import clientPromise from "../../../../libs/mongo";
+import {connectDB} from "@/lib/mongodb";
 
 
 // export async function GET() {
@@ -114,9 +114,9 @@ export async function POST(request: Request) {
     console.log("Received data:", data);
 
     // Connect to MongoDB
-    const client = await clientPromise;
-    const db = client.db("myfield"); 
-    const collection = db.collection("fromdata"); 
+    const client = await connectDB();
+    const db = client.db("myfield");
+    const collection = db.collection("fromdata");
 
     // Insert the received data into the database
     const result = await collection.insertOne(data);
@@ -145,8 +145,8 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db("myfield");
+    const client = await connectDB;
+    const db = client.connectdb("myfield");
     const collection = db.collection("fromdata");
 
     
