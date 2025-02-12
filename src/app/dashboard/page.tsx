@@ -2,7 +2,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Header from "../components/Header"; // Ensure correct import path
+import Header from "../components/Header"; 
+import CreateButton from "../components/CreateButton"; 
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -25,7 +26,8 @@ export default function Dashboard() {
   return (
     <>
       <Header />
-      <main className="flex min-h-screen flex-col items-center justify-center">
+      <main className="flex min-h-screen flex-col items-center justify-center w-full">
+        <CreateButton />
         <h1 className="text-2xl font-bold">Welcome to Your Dashboard</h1>
         {session?.user && (
           <p className="text-lg mt-2">
