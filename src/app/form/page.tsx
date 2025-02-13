@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Header from "../components/Header";
+
 export default function Form() {
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,19 +17,28 @@ export default function Form() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+  
     const response = await fetch("/api/form", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
-
+  
     const result = await response.json();
     setLoading(false);
     setMessage(result.message || "Error saving data!");
-
-    if (response.ok) setFormData({ name: "", email: "" }); // Reset form on success
+  
+    if (response.ok) {
+      setFormData({ name: "", email: "" }); // Reset form on success
+  
+      // Store the last inserted ID in localStorage
+      localStorage.setItem("lastInsertedId", result.id);
+  
+      router.push("/CreateForm"); // Redirect to createForm page
+    }
   };
+  
+  
 
   return (
     <div>
