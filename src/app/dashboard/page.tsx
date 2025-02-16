@@ -26,8 +26,12 @@ export default function Dashboard() {
   return (
     <>
       <Header />
-      <main className="flex min-h-screen flex-col items-center justify-center w-full">
-        <CreateButton />
+      <main className="flex min-h-screen flex-col items-center justify-center w-full relative">
+        {/* Fixed position button */}
+        <div className="absolute top-4 right-4"> {/* Adjust values as needed */}
+          <CreateButton />
+        </div>
+        
         <h1 className="text-2xl font-bold">Welcome to Your Dashboard</h1>
         {session?.user && (
           <p className="text-lg mt-2">
@@ -37,4 +41,5 @@ export default function Dashboard() {
       </main>
     </>
   );
+
 }
