@@ -28,58 +28,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 }
 
 
-// export async function POST(request: Request) {
-//     try {
-//       const { searchParams } = new URL(request.url);
-      
-//       let data;
-//       const contentType = request.headers.get("content-type");
-  
-//       if (contentType?.includes("application/json")) {
-//         data = await request.json();
-//       } else if (
-//         contentType?.includes("multipart/form-data") ||
-//         contentType?.includes("application/x-www-form-urlencoded")
-//       ) {
-//         const formData = await request.formData();
-//         data = {
-//           name: formData.get("name"),
-//           email: formData.get("email"),
-//           message: formData.get("message"),
-//         };
-//       } else if (searchParams.has("name") && searchParams.has("email") && searchParams.has("message")) {
-//         // Handle query params
-//         data = {
-//           name: searchParams.get("name"),
-//           email: searchParams.get("email"),
-//           message: searchParams.get("message"),
-//         };
-//       } else {
-//         return new Response("Unsupported Media Type", { status: 415 });
-//       }
-  
-//       console.log("Received Data:", data);
-  
-     
-//       await connectDB();
-//       const result = await SecondFormData.create(data);
-//       console.log("Data saved to database:", result);
-  
-//       return new Response(JSON.stringify({ success: true, data: result }), {
-//         status: 200,
-//         headers: {
-//           "Content-Type": "application/json",
-//           "Access-Control-Allow-Origin": "*",
-//           "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-//           "Access-Control-Allow-Headers": "Content-Type",
-//         },
-//       });
-//     } catch (error) {
-//       console.error("Error processing request:", error);
-//       return new Response("Internal Server Error", { status: 500 });
-//     }
-//   }
-  
+
 
 export async function POST(request: Request) {
     try {
