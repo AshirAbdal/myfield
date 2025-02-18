@@ -1,14 +1,13 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header"; 
 import CreateButton from "../components/CreateButton"; 
+import Link from "next/link";
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [forms, setForms] = useState<Array<{ _id: string; name: string }>>([]);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchFormData = async () => {
