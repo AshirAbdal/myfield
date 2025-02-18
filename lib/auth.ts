@@ -43,7 +43,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = user.id; // Store user ID in token
         token.name = user.name;
         token.email = user.email;
       }
@@ -51,13 +51,13 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       session.user = {
-        id: token.id as string,
+        id: token.id as string, // Ensure user_id is available
         name: token.name || "",
         email: token.email || "",
       };
       return session;
     },
-  },
+  },  
   secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/auth/signin",
