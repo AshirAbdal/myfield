@@ -4,7 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function Header() {
-  const { status } = useSession();
+  const { status, data} = useSession();
+
+  console.log(data)
 
   return (
     <header className="w-full bg-white shadow-sm px-6 py-3 flex justify-between items-center border-b">
@@ -32,7 +34,8 @@ export default function Header() {
       </nav>
 
       {/* Right: Session Management */}
-      <div>
+      <div> 
+        <div>{data?.user.id}</div>
         {status === "authenticated" ? (
           <button
             onClick={() => signOut()}

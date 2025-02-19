@@ -37,13 +37,18 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60 // 30 days
-
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
+    async signIn({ user }) {
+      if (user) {
+        return "/dashboard"; // Redirects user to dashboard upon successful login
+      }
+      return false;
+    },
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id; // Store user ID in token
+        token.id = user.id;
         token.name = user.name;
         token.email = user.email;
       }
@@ -51,13 +56,13 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       session.user = {
-        id: token.id as string, // Ensure user_id is available
+        id: token.id as string,
         name: token.name || "",
         email: token.email || "",
       };
       return session;
     },
-  },  
+  },
   secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/auth/signin",
