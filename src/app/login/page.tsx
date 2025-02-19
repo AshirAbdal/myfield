@@ -1,30 +1,45 @@
 "use client";
 import { FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+
+  // const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   const formData = new FormData(event.currentTarget);
+
+  //   const res = await signIn("credentials", {
+  //     email: formData.get("email") as string,
+  //     password: formData.get("password") as string,
+  //     redirect: false,
+  //   });
+
+  //   if (res?.error) {
+  //     setError(res.error);
+  //   } else {
+  //     router.refresh();
+  //     // router.push("/dashboard");
+  //     window.location.pathname="/dashboard"
+  //   }
+  // };
+
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-
+  
     const res = await signIn("credentials", {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
-      redirect: false,
     });
-
+  
     if (res?.error) {
       setError(res.error);
-    } else {
-      router.refresh();
-      router.push("/dashboard");
     }
   };
+  
 
   return (
     <section className="w-full h-screen flex items-center justify-center">
