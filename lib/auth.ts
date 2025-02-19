@@ -1,3 +1,4 @@
+// auth.ts
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import type { NextAuthOptions } from "next-auth";
@@ -31,7 +32,12 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Wrong email or password.");
         }
 
-        return { id: user._id.toString(), name: user.name, email: user.email };
+        // Convert Mongoose document to a plain object
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+        };
       },
     }),
   ],
@@ -42,7 +48,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user }) {
       if (user) {
-        return "/dashboard"; // Redirects user to dashboard upon successful login
+        return true; // Allow sign in
       }
       return false;
     },
@@ -62,11 +68,12 @@ export const authOptions: NextAuthOptions = {
       };
       return session;
     },
+    async redirect({ baseUrl }) {
+      return baseUrl + "/dashboard";
+    },
   },
   secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/auth/signin",
   },
 };
-
-export default authOptions;

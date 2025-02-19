@@ -6,21 +6,16 @@ import CreateButton from "../components/CreateButton";
 import Link from "next/link";
 
 export default function Dashboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [forms, setForms] = useState<Array<{ _id: string; name: string }>>([]);
 
   useEffect(() => {
     const fetchFormData = async () => {
-      if (session?.user) {
+      if (status === "authenticated" && session?.user) {
         try {
           const response = await fetch("/api/formCount");
-          const contentType = response.headers.get("content-type");
-          
-          if (!contentType?.includes("application/json")) {
-            throw new Error("Invalid JSON response");
-          }
-
           const data = await response.json();
+
           if (data.success) {
             setForms(data.forms || []);
           }
@@ -31,24 +26,39 @@ export default function Dashboard() {
     };
 
     fetchFormData();
-  }, [session]);
+  }, [session, status]);
 
-  // ... loading and other existing code ...
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (status === "unauthenticated") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <p className="mb-4 text-lg font-medium">You are not logged in.</p>
+        <button
+          onClick={() => window.location.href = "/login"}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
       <Header />
       <main className="flex min-h-screen flex-col items-center justify-center w-full relative">
+        
         <div className="absolute top-4 right-4">
           <CreateButton />
         </div>
         
         <h1 className="text-2xl font-bold mb-4">Welcome to Your Dashboard</h1>
-        {session?.user && (
-          <p className="text-lg mb-6">
-            Logged in as <span className="font-semibold">{session.user.email}</span>
-          </p>
-        )}
+        <p className="text-lg mb-6">
+          Logged in as <span className="font-semibold">{session?.user?.email}</span>
+        </p>
 
         <div className="w-full max-w-2xl px-4">
           <h2 className="text-xl font-semibold mb-4">Your Forms ({forms.length})</h2>
