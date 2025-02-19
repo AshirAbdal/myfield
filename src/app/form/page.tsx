@@ -17,26 +17,41 @@ export default function Form() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setMessage("");
   
-    const response = await fetch("/api/form", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const response = await fetch("/api/form", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
   
-    const result = await response.json();
-    setLoading(false);
-    setMessage(result.message || "Error saving data!");
+      // Check if the response is JSON
+      const contentType = response.headers.get("content-type");
+      const result = contentType?.includes("application/json") ? await response.json() : {};
   
-    if (response.ok) {
-      setFormData({ name: "", email: "" }); // Reset form on success
+      setLoading(false);
   
-      // Store the last inserted ID in localStorage
-      localStorage.setItem("lastInsertedId", result.id);
+      if (response.ok) {
+        setMessage(result.message || "Data saved successfully!");
+        setFormData({ name: "", email: "" }); // Reset form
   
-      router.push("/CreateForm"); // Redirect to createForm page
+        if (result.id) {
+          localStorage.setItem("lastInsertedId", result.id); // Save the ID
+        }
+  
+        router.push("/CreateForm"); // Redirect
+      } else {
+        setMessage(result.message || "Error saving data!");
+      }
+  
+    } catch (error) {
+      console.error("Submission error:", error);
+      setLoading(false);
+      setMessage("An unexpected error occurred. Please try again.");
     }
   };
+  
   
   
 
