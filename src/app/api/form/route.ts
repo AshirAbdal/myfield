@@ -1,38 +1,34 @@
+// app/api/form/route.ts
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
 import FirstFormData from "@/models/FirstFormData";
 
-// app/api/formCount/route.ts
-export async function GET() {
+export async function POST(req: Request) {
   try {
     await connectDB();
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch forms with names and IDs
-    const forms = await FirstFormData.find(
-      { user_id: session.user.id },
-      { _id: 1, name: 1 } // Only get ID and name
-    ).lean();
+    const { name, email } = await req.json();
 
-    return NextResponse.json({ 
-      success: true, 
-      formCount: forms.length,
-      forms 
+    if (!name || !email) {
+      return NextResponse.json({ message: "Name and email are required." }, { status: 400 });
+    }
+
+    const newForm = await FirstFormData.create({
+      name,
+      email,
+      user_id: session.user.id, // Add the user_id from session
     });
+
+    return NextResponse.json({ message: "Form saved successfully!", id: newForm._id }, { status: 201 });
   } catch (error) {
-    console.error("Error fetching form count:", error);
-    return NextResponse.json(
-      { success: false, message: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Error saving form:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

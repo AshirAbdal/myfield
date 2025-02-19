@@ -27,9 +27,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-
-
-
 export async function POST(request: Request) {
     try {
       const { searchParams } = new URL(request.url);

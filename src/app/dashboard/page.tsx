@@ -55,10 +55,10 @@ export default function Dashboard() {
           <CreateButton />
         </div>
         
-        <h1 className="text-2xl font-bold mb-4">Welcome to Your Dashboard</h1>
+        {/* <h1 className="text-2xl font-bold mb-4">Welcome to Your Dashboard</h1>
         <p className="text-lg mb-6">
           Logged in as <span className="font-semibold">{session?.user?.email}</span>
-        </p>
+        </p> */}
 
         <div className="w-full max-w-2xl px-4">
           <h2 className="text-xl font-semibold mb-4">Your Forms ({forms.length})</h2>
