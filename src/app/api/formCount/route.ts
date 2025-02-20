@@ -95,20 +95,26 @@ export async function GET() {
       { firstFormId: 1, requestUrl: 1 }
     ).lean();
 
-    // Create a mapping of firstFormId → requestUrls
-    const formURLMap: Record<string, string[]> = {};
+    console.log("Fetched SecondFormData:", secondForms); // Debugging
+
+    // Create a mapping of firstFormId → unique requestUrls
+    const formURLMap: Record<string, Set<string>> = {};
     secondForms.forEach((data) => {
       const formId = data.firstFormId.toString();
-      if (!formURLMap[formId]) formURLMap[formId] = [];
-      formURLMap[formId].push(data.requestUrl);
+      if (!formURLMap[formId]) formURLMap[formId] = new Set();
+      formURLMap[formId].add(data.requestUrl); // Ensures uniqueness
     });
+
+    console.log("FormURLMap before conversion:", formURLMap); // Debugging
 
     // Merge requestUrls with firstForms
     const formsWithUrls = firstForms.map((form) => ({
-      _id: form._id.toString(), // Convert ObjectId to string for frontend compatibility
+      _id: form._id.toString(),
       name: form.name,
-      requestURLs: formURLMap[form._id.toString()] || [], // Attach request URLs
+      requestURLs: Array.from(formURLMap[form._id.toString()] || []), // Convert Set to Array
     }));
+
+    console.log("Final Mapped Forms:", formsWithUrls); // Debugging
 
     return NextResponse.json({
       success: true,
@@ -123,3 +129,4 @@ export async function GET() {
     );
   }
 }
+
