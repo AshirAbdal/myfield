@@ -1,12 +1,65 @@
-// app/api/formCount/route.ts
+// // app/api/formCount/route.ts
+// import { NextResponse } from "next/server";
+// import { getServerSession } from "next-auth";
+// import { authOptions } from "@/lib/auth";
+// import { connectDB } from "@/lib/mongodb";
+// import FirstFormData from "@/models/FirstFormData";
+
+
+// // app/api/formCount/route.ts
+// export async function GET() {
+//   try {
+//     await connectDB();
+//     const session = await getServerSession(authOptions);
+
+//     if (!session?.user?.id) {
+//       return NextResponse.json(
+//         { success: false, message: "Unauthorized" },
+//         { status: 401 }
+//       );
+//     }
+
+//     // Fetch forms with names and IDs
+//     const forms = await FirstFormData.find(
+//       { user_id: session.user.id },
+//       { _id: 1, name: 1 } // Only get ID and name
+//     ).lean();
+
+//     return NextResponse.json({ 
+//       success: true, 
+//       formCount: forms.length,
+//       forms 
+//     });
+//   } catch (error) {
+//     console.error("Error fetching form count:", error);
+//     return NextResponse.json(
+//       { success: false, message: "Internal Server Error" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+
+
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
 import FirstFormData from "@/models/FirstFormData";
+import SecondFormData from "@/models/SecondFormData";
+import mongoose, { Types } from "mongoose"; // Import Types for ObjectId
 
+// Define TypeScript interfaces for MongoDB data
+interface FirstForm {
+  _id: Types.ObjectId;
+  name: string;
+}
 
-// app/api/formCount/route.ts
+interface SecondForm {
+  firstFormId: Types.ObjectId;
+  requestUrl: string;
+}
+
 export async function GET() {
   try {
     await connectDB();
@@ -19,19 +72,51 @@ export async function GET() {
       );
     }
 
-    // Fetch forms with names and IDs
-    const forms = await FirstFormData.find(
-      { user_id: session.user.id },
-      { _id: 1, name: 1 } // Only get ID and name
+    // Fetch FirstFormData for the logged-in user
+    const firstForms: FirstForm[] = await FirstFormData.find(
+      { user_id: new mongoose.Types.ObjectId(session.user.id) },
+      { _id: 1, name: 1 } // Get only _id and name
+    ).select('_id name').lean();
+
+    if (!firstForms.length) {
+      return NextResponse.json({
+        success: true,
+        formCount: 0,
+        forms: [],
+      });
+    }
+
+    // Extract form IDs from firstForms
+    const formIds = firstForms.map((form) => form._id);
+
+    // Fetch SecondFormData matching firstFormIds
+    const secondForms: SecondForm[] = await SecondFormData.find(
+      { firstFormId: { $in: formIds } },
+      { firstFormId: 1, requestUrl: 1 }
     ).lean();
 
-    return NextResponse.json({ 
-      success: true, 
-      formCount: forms.length,
-      forms 
+    // Create a mapping of firstFormId → requestUrls
+    const formURLMap: Record<string, string[]> = {};
+    secondForms.forEach((data) => {
+      const formId = data.firstFormId.toString();
+      if (!formURLMap[formId]) formURLMap[formId] = [];
+      formURLMap[formId].push(data.requestUrl);
+    });
+
+    // Merge requestUrls with firstForms
+    const formsWithUrls = firstForms.map((form) => ({
+      _id: form._id.toString(), // Convert ObjectId to string for frontend compatibility
+      name: form.name,
+      requestURLs: formURLMap[form._id.toString()] || [], // Attach request URLs
+    }));
+
+    return NextResponse.json({
+      success: true,
+      formCount: firstForms.length,
+      forms: formsWithUrls,
     });
   } catch (error) {
-    console.error("Error fetching form count:", error);
+    console.error("Error fetching form data:", error);
     return NextResponse.json(
       { success: false, message: "Internal Server Error" },
       { status: 500 }
