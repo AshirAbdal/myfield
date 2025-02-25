@@ -1,6 +1,6 @@
 "use client";
-import { Provider } from "@/src/app/provider/page";
-import { SessionProvider } from "next-auth/react";
+
+import Provider from "@/src/app/provider/page"; 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -25,7 +25,7 @@ export default function RootLayout({
         <body
           className={`h-full ${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <SessionProvider>{children}</SessionProvider>
+          {children}
         </body>
       </Provider>
     </html>
