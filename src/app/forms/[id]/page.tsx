@@ -40,3 +40,9 @@
 //     return notFound(); // If invalid ObjectId, return 404
 //   }
 // }
+
+
+export default function Page() {
+    return <div>Form Page</div>;
+  }
+  
