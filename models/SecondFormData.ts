@@ -6,7 +6,7 @@ const SecondFormDataSchema = new mongoose.Schema(
     email: { type: String, required: true },
     message: { type: String, required: true },
     requestUrl: { type: String, required: true },
-    firstFormId: { type: mongoose.Schema.Types.ObjectId, ref: "FirstFormData", required: true }, // ✅ Add this
+    firstFormId: { type: mongoose.Schema.Types.ObjectId, ref: "FirstFormData", required: true },
   },
   { timestamps: true }
 );
