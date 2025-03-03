@@ -196,7 +196,7 @@ export default function CreateForm() {
           <p className="text-lg">
             <span className="font-semibold text-gray-700">API Endpoint:</span>{" "}
             <span className="text-blue-600 break-all hover:text-blue-800 transition-colors">
-              http://localhost:3000/api/CreateId/{id}
+              https://myfield.ravee.xyz//api/CreateId/{id}
             </span>
           </p>
         </div>
